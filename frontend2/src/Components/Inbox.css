@@ -1,0 +1,106 @@
+/* src/components/Inbox.css */
+
+/* Chat Window */
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+  }
+  
+  /* Chat Messages Container */
+  .chat-messages {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    overflow-y: auto;
+    flex: 1;
+    background: #f1f1f1;
+    border-radius: 0 0 10px 10px;
+  }
+  
+  /* Chat Message */
+  .chat-message {
+    margin-bottom: 10px;
+    padding: 2px;
+    border-radius: 15px;
+    max-width: 70%;
+    position: relative;
+    word-wrap: break-word;
+  }
+  
+  /* Sent Messages */
+  .chat-message.sent {
+    background: #3604ec;
+    color: white;
+    align-self: flex-end;
+    border-radius: 15px 15px 0 15px;
+  }
+  
+  /* Received Messages */
+  .chat-message.received {
+    background: #2c2c2c;
+    color: #ffffff;
+    align-self: flex-start;
+    border-radius: 15px 15px 15px 0;
+  }
+  
+  /* Timestamp */
+  .timestamp {
+    display: block;
+    font-size: 10px;
+    color: #bec5ca;
+    margin-top: 2px;
+    text-align: right;
+  }
+  
+  /* Input Group */
+  .input-group {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  /* Input Field */
+  .form-control {
+    border-radius: 20px;
+    border: 1px solid #e9ecef;
+    padding: 10px;
+    margin-right: 10px;
+  }
+  
+  /* Icon Button */
+  .btn-icon {
+    background-color: #007bff;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .btn-icon:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+  }
+  
+  .btn-icon:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(38, 143, 255, 0.5);
+  }
+  .message-text {
+    max-width: 95%;
+    padding: 5px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: left; 
+  }
