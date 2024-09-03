@@ -59,7 +59,7 @@ const Inbox = ({ BackendServer }) => {
       if (!token) return;
 
       ws.current = new WebSocket(
-        `wss://localhost:3000?token=${token}`
+        `ws://localhost:3000?token=${token}`
       );
 
       ws.current.onopen = () => {
@@ -100,7 +100,6 @@ const Inbox = ({ BackendServer }) => {
         setIsConnected(false);
         setTimeout(createSocket, 5000); // Reconnect after 5 seconds
       };
-
       ws.current.onerror = (error) => {
         console.error("WebSocket error:", error);
       };
