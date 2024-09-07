@@ -22,7 +22,9 @@ const PageNotFound = () => {
         color: '#fff',
         textDecoration: 'none',
         borderRadius: '5px'
+        //rsdtgfnh
       }}>
+        
         Go Home
       </Link>
     </div>
