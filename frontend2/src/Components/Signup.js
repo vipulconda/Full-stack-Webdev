@@ -35,7 +35,7 @@ const Register = () => {
   const handleverificaton = async (e) => {
     e.preventDefault();
     try {
-      const fullUrl = `${process.env.REACT_APP_API_URL}${"/send-otp"}`;
+      const fullUrl = `${process.env.REACT_APP_API_URL}/${"/send-otp"}`;
       const response = await axios.post(fullUrl, {
         firstname,
         lastname,
@@ -75,7 +75,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${BackendServer}${"/register"}`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}${"/register"}`, {
         firstname,
         lastname,
         contact,

@@ -66,7 +66,7 @@ const EditProfile = () => {
         console.error('Error fetching profile data:', error);
         setFormError('Failed to load profile data. Please try again.');
       });
-  }, [isLoggedIn, username, BackendServer, navigate]);
+  }, [isLoggedIn, username, navigate]);
 
   useEffect(() => {
     localStorage.setItem('ProfileData', JSON.stringify(profileData));
@@ -128,7 +128,7 @@ const EditProfile = () => {
     });
 
     try {
-      const fullUrl = `${BackendServer}/edit`;
+      const fullUrl = `${process.env.REACT_APP_API_URL}/edit`;
       const response = await axios.post(fullUrl, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

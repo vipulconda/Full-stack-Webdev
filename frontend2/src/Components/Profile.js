@@ -54,7 +54,6 @@ const Profile = () => {
     fetchUserProfile();
   }, [
     username,
-    BackendServer,
     isLoggedIn,
     isEdited,
     navigate,
