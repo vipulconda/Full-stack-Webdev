@@ -59,7 +59,7 @@ const Inbox = () => {
       if (!token) return;
 
       ws.current = new WebSocket(
-        `${process.env.REACT_APP_API_URL}?token=${token}`
+        `${process.env.REACT_APP_WS_URL}?token=${token}`
       );
 
       ws.current.onopen = () => {
