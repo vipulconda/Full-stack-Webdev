@@ -17,7 +17,7 @@ import Inbox from "./Components/Inbox.js";
 
 
 function App() {
-  const BackendServer="http://localhost:3000"
+ 
   
   const Cardlist = [
     { id: 1, title: "Physics", data: "Physics is best" },
@@ -39,14 +39,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home Cardlist={cards}/>} />
           <Route path="/Home" element={<Home Cardlist={cards}/>} />
-          <Route path="/Contact" element={<Contact BackendServer={BackendServer}/>} />
-          <Route path="/Login" element={<Login BackendServer={BackendServer} />} />
-          <Route path="/Register" element={<Register BackendServer={BackendServer} />} />
-          <Route path="/ResetPassword" element={<ResetPassword BackendServer={BackendServer} />} />
-          <Route path="/UpdatePassword" element={<UpdatePassword BackendServer={BackendServer} />} />
-          <Route path="/profile/:username" element={<Profile  BackendServer={BackendServer}/>} />
-          <Route path="/accounts/edit" element ={<EditProfile  BackendServer={BackendServer}/>}/>
-          <Route path="/accounts/:username/messages" element={<Inbox BackendServer={BackendServer}/>} />
+          <Route path="/Contact" element={<Contact/>} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
+          <Route path="/ResetPassword" element={<ResetPassword  />} />
+          <Route path="/UpdatePassword" element={<UpdatePassword />} />
+          <Route path="/profile/:username" element={<Profile/>} />
+          <Route path="/accounts/edit" element ={<EditProfile />}/>
+          <Route path="/accounts/:username/messages" element={<Inbox/>} />
           <Route path='*' element={<PageNotFound/>}></Route> 
         </Routes>
       </Router>

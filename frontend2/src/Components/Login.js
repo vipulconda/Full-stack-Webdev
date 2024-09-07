@@ -5,7 +5,7 @@ import "toastr/build/toastr.min.css";
 import axios from "axios";
 import PageNotFound from "./pagenotfound";
 import {useAuth} from '../AuthContext'
-const Login = ({ BackendServer }) => {
+const Login = () => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,7 +14,7 @@ const Login = ({ BackendServer }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const fullUrl = `${BackendServer}/login`;
+      const fullUrl = `${process.env.REACT_APP_API_URL}/login`;
       const response = await axios.post(fullUrl, { username, password });
 
       if (response && response.data) {

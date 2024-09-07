@@ -5,7 +5,7 @@ import "./Inbox.css";
 import { useAuth } from "../AuthContext";
 import { useLocation } from "react-router-dom";
 // Utility functions
-const Inbox = ({ BackendServer }) => {
+const Inbox = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
@@ -59,7 +59,7 @@ const Inbox = ({ BackendServer }) => {
       if (!token) return;
 
       ws.current = new WebSocket(
-        `ws://localhost:3000?token=${token}`
+        `${process.env.REACT_APP_API_URL}?token=${token}`
       );
 
       ws.current.onopen = () => {

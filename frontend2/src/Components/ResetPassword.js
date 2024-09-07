@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-const ResetPassword = ({ BackendServer }) => {
+const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -11,7 +11,7 @@ const ResetPassword = ({ BackendServer }) => {
     e.preventDefault();
 
     try {
-      const fullUrl = `${BackendServer}${"/resetpassword"}`;
+      const fullUrl = `${process.env.REACT_APP_API_URL}${"/resetpassword"}`;
       const response = await axios.post(
         fullUrl,
         { email },

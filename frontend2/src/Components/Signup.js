@@ -2,7 +2,7 @@ import React from "react";
 import { useState ,useEffect} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-const Register = ({ BackendServer }) => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUserName] = useState("");
@@ -35,7 +35,7 @@ const Register = ({ BackendServer }) => {
   const handleverificaton = async (e) => {
     e.preventDefault();
     try {
-      const fullUrl = `${BackendServer}${"/send-otp"}`;
+      const fullUrl = `${process.env.REACT_APP_API_URL}${"/send-otp"}`;
       const response = await axios.post(fullUrl, {
         firstname,
         lastname,

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {useAuth} from '../AuthContext'
 const countries = ["United States", "Canada", "United Kingdom", "India", "Australia", "Germany", "France", "China", "Japan", "Brazil"];
 
-const EditProfile = ({BackendServer }) => {
+const EditProfile = () => {
   const [profileData, setProfileData] = useState({
     firstname: '',
     lastname: '',
@@ -42,7 +42,7 @@ const EditProfile = ({BackendServer }) => {
     };
     // Load data from backend when component mounts
     axios
-      .get(`${BackendServer}/profile/${username}`, {
+      .get(`${process.env.REACT_APP_API_URL}/profile/${username}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

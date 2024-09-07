@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
 
-const Profile = ({ BackendServer }) => {
+const Profile = () => {
   const [UserProfile, setUserProfile] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -27,8 +27,8 @@ const Profile = ({ BackendServer }) => {
     const fetchUserProfile = async () => {
       try {
         const endpoint = isOwnProfile
-          ? `${BackendServer}/profile/${username}`
-          : `${BackendServer}/profile/public/${username}`;
+          ? `${process.env.REACT_APP_API_URL}/profile/${username}`
+          : `${process.env.REACT_APP_API_URL}/profile/public/${username}`;
 
         const response = await axios.get(endpoint, {
           headers: { Authorization: `Bearer ${token}` },
@@ -79,7 +79,7 @@ const Profile = ({ BackendServer }) => {
 
       if (isConnected) {
         await axios.post(
-          `${BackendServer}/api/disconnect/${username}`,
+          `${process.env.REACT_APP_API_URL}/api/disconnect/${username}`,
           {},
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -89,7 +89,7 @@ const Profile = ({ BackendServer }) => {
       } else {
         console.log("token ", token);
         await axios.post(
-          `${BackendServer}/api/connect/${username}`,
+          `${process.env.REACT_APP_API_URL}/api/connect/${username}`,
           {},
           {
             headers: { Authorization: `Bearer ${token}` },

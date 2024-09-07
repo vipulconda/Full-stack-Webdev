@@ -3,7 +3,7 @@ import "./Contact.css";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-const Contact = ({BackendServer}) => {
+const Contact = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -15,7 +15,7 @@ const Contact = ({BackendServer}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const fullUrl = `${BackendServer}${'/contact'}`
+      const fullUrl = `${process.env.REACT_APP_API_URL}${'/contact'}`
       const response = await axios.post(
        fullUrl,
         { firstname, lastname, email, mobilenumber, message }

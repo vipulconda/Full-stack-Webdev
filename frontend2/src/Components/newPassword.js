@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-const UpdatePassword = ({ BackendServer }) => {
+const UpdatePassword = () => {
   const [password, setpassword] = useState("");
   const [confirmpassword, setconfirmpassword] = useState("");
   const [message, setMessage] = useState("");
@@ -11,10 +11,10 @@ const UpdatePassword = ({ BackendServer }) => {
   const token = query.get("token");
   const [isValidtoken, setIsvalidtoken] = useState(false);
   const [error, setError] = useState("");
-  const fullUrl = `${BackendServer}${"/newpassword"}`;
+  const fullUrl = `${process.env.REACT_APP_API_URL}${"/newpassword"}`;
   const validateToken = async() => {
     try {
-      const response = await axios.post(`${BackendServer}${"/verifytoken"}`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}${"/verifytoken"}`, {
         token,
       });
       if (response && response.status === 200) {
