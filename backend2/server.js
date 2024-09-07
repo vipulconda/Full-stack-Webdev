@@ -5,10 +5,12 @@ const bodyParser=require('body-parser')
 const cors=require('cors')
 const http = require('http');
 const path = require('path');
+require('dotenv').config();
 
 const App=express();
 const wss = require('./websocketserver');
-const mongoURI='mongodb://localhost:27017/edtech'
+const mongoURI = process.env.MONGODB_URI;
+console.log("Mongodb url",mongoURI)
 PORT=3000;
 mongoose.connect(mongoURI).then(()=>{
     console.log('mongodb connected');
