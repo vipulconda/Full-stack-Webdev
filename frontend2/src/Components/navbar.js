@@ -10,7 +10,6 @@ const Navbar = () => {
   };
 
   const handleProfile = () => {
-    const storedUser = localStorage.getItem("loggedInUser");
     if (user && user.username) {
       const username = user.username;
       console.log("Username from localStorage:", username);
@@ -117,7 +116,16 @@ const Navbar = () => {
               Register
             </button>
           )}
-          {isLoggedIn ? (
+          {!isLoggedIn ? (
+            <button
+              className="btn btn-primary btn-sm"
+              type="button"
+              onClick={handleonClick}
+            >
+              <i className="bi bi-box-arrow-in-right px-1"></i>
+              Log In
+            </button>
+          ):(
             <button
               className="btn btn-light btn-sm rounded-pill"
               type="button"
@@ -130,16 +138,8 @@ const Navbar = () => {
                 {" "}
               </i>
             </button>
-          ) : (
-            <button
-              className="btn btn-primary btn-sm"
-              type="button"
-              onClick={handleonClick}
-            >
-              <i className="bi bi-box-arrow-in-right px-1"></i>
-              Log In
-            </button>
-          )}
+          )
+        } 
         </div>
       </div>
     </nav>

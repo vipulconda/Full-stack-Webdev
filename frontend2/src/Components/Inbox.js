@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import "./Inbox.css";
-import { useAuth } from "../AuthContext";
 import { useLocation } from "react-router-dom";
+import {useAuth} from '../AuthContext'
+import {useNavigate} from 'react-router-dom'
 // Utility functions
 const Inbox = () => {
   const [users, setUsers] = useState([]);
@@ -12,9 +13,10 @@ const Inbox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const ws = useRef(null); // Use ref for WebSocket to maintain the same instance
-  const { token, user } = useAuth();
+  const {isLoggedIn,login ,logout, token, user } = useAuth();
   const location = useLocation(); // Hook to access state passed during navigation
   const [isConnected, setIsConnected] = useState(false); // Connection status state
+  const navigate=useNavigate();
   // Format the date
   const formatDate = (timestamp) => {
     const date = dayjs(timestamp);
@@ -56,7 +58,11 @@ const Inbox = () => {
   // WebSocket connection setup with connection state management
   useEffect(() => {
     const createSocket = () => {
-      if (!token) return;
+
+      if (!token){
+        navigate('/login');
+        return;
+      }
 
       ws.current = new WebSocket(
         `${process.env.REACT_APP_WS_URL}?token=${token}`

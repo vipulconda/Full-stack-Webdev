@@ -358,17 +358,22 @@ router.get("/test", (req, res) => {
 // public user profile
 router.get('/profile/public/:username',async(req,res)=>{
   const username = req.params.username;
+  console.log(username)
   try {
     const user = await User.findOne({ username });
+    console.log(user)
+
     if (!user) return res.status(400).json({ message: "Profile does not exist" });
 
-    const profilePicUrl=""
+    let profilePicUrl
     if (user.profilepic) {
+      console.log("inside 1")
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/${path.basename(user.profilepic)}`;
     } else {
+      console.log("inside 2")
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/default.jpg`;
     }
-    console.log(user)
+      console.log("outside 2")
    return res.status(200).json({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -381,6 +386,7 @@ router.get('/profile/public/:username',async(req,res)=>{
     });
     
   } catch (error) {
+    console.log("error happended while sending profile")
     return res.status(500).json({ message: "Server error" });
   }
 })

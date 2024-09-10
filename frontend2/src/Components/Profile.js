@@ -11,15 +11,13 @@ const Profile = () => {
   const navigate = useNavigate();
   const [isEdited, setIsEdited] = useState(false);
   const { isLoggedIn, login, logout, token, user } = useAuth();
-  const [isOwnProfile, setIsOwnProfile] = useState(username === user?.username);
-  const [message, setMessage] = useState("");
-  const [messageStatus, setMessageStatus] = useState("");
-  const [socket, setSocket] = useState(null);
-  const [messages, setMessages] = useState([]); // State for all messages
+  const [isOwnProfile, setIsOwnProfile] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   useEffect(() => {
     if (username && user) {
       setIsOwnProfile(username === user?.username);
+    }else{
+      setIsOwnProfile(false);
     }
   }, [username, user]);
 
@@ -36,7 +34,8 @@ const Profile = () => {
 
         setUserProfile(response.data);
         setSuccess(true);
-        //console.log(response.data)
+        console.log("success status",success)
+        console.log("profile data ",response.data)
       } catch (error) {
         if (error.response && error.response.status === 401) {
           setError("Unauthorized access. Please log in.");
@@ -48,6 +47,7 @@ const Profile = () => {
           navigate("/login");
         }
         setSuccess(false);
+        
       }
     };
 
@@ -60,14 +60,15 @@ const Profile = () => {
     logout,
     token,
     isOwnProfile,
+    success
   ]);
-
   useEffect(() => {
     const checkConnection = () => {
-      if (UserProfile.connections.includes(user.username)) {
+      if (UserProfile && user && UserProfile.connections.includes(user.username)) {
         setIsConnected(true);
       }
     };
+  
     if (!isOwnProfile && UserProfile) {
       checkConnection();
     }
