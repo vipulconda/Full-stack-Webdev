@@ -1,3 +1,8 @@
+### Deployed frontend on vercel 
+### Deployed backend on render
+### end to end connected with mongodb database
+### Website live on 
+
 ### Used node version v16.20.2
 ### see packages required in pakage.json file
 ### By default code uses port 3000  for backend server and port 3001 for frontend server
