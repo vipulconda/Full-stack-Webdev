@@ -54,10 +54,10 @@ router.post("/send-otp", async (req, res) => {
     const mailOptions = {
       to: email,
       from: "vipul02vns@gmail.com",
-      subject: "Password Reset Request",
+      subject: "Verify your email",
       text: `Hi "${username}",\n\n Verify your email to complete the registration process.\n\n
           OTP for email verification is  ${otp} \n\n
-       feel free to contact us.\n\nBest regards,\nYour Team`,
+       feel free to contact us.\n\nBest regards,\Study Point Team`,
       html: `<p>Hi there,</p><p> 
       Verify your email to complete the registration process.</p> <p>OTP for email verificaltion is</p><p>
       <h2>${otp}</h2>
@@ -278,7 +278,8 @@ router.get("/profile/:username", authenticateToken, async (req, res) => {
     } else {
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/default.jpg`;
     }
-    console.log("user exists")
+    
+    console.log("user exists" , user)
    return res.status(200).json({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -361,13 +362,13 @@ router.get('/profile/public/:username',async(req,res)=>{
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: "Profile does not exist" });
 
-    let profilePicUrl;
+    const profilePicUrl=""
     if (user.profilepic) {
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/${path.basename(user.profilepic)}`;
     } else {
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/default.jpg`;
     }
-
+    console.log(user)
    return res.status(200).json({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -378,6 +379,7 @@ router.get('/profile/public/:username',async(req,res)=>{
       profilepic: profilePicUrl,
       connections:user.connections
     });
+    
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
   }

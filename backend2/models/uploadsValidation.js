@@ -16,7 +16,7 @@ const userValidationSchema = Joi.object({
       if (!allowedExtensions.includes(ext)) {
         return helpers.error('any.invalid');
       }
-   console.log('valid stirng')
+   console.log('valid string')
       return stringValue; // Return the valid value
     }, 'File Extension Validation')
     .required()
