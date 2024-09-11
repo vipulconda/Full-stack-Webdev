@@ -28,7 +28,7 @@ const Login = () => {
         };
         const authToken=response.data.token;
         const expiresIn=response.data.expiresIn;
-        login(userData,authToken);
+        login(userData,authToken,expiresIn);
 
         // Optionally, show success message using toastr
         toastr.success("Login Successful");
