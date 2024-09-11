@@ -3,12 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 const Navbar = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, login, logout, user } = useAuth();
-
+  const { isLoggedIn, login, logout, user,expiryTime } =  useAuth();
+ 
+  useEffect(() => {
+    if (expiryTime) {
+      try {
+        const currentTime = Date.now();
+        if (expiryTime < currentTime) {
+          logout();
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        logout();
+      }
+    }
+  }, []);
   const handleonClick = () => {
     navigate("/Login");
   };
-
   const handleProfile = () => {
     if (user && user.username) {
       const username = user.username;

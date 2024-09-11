@@ -151,7 +151,7 @@ router.post("/login", async (req, res) => {
     jwt_token = jwt.sign({ username: user.username }, secret_key, {
       expiresIn: "1h",
     });
-    res.json({ token: jwt_token , username : user.username, email : user.email});
+    res.json({ token: jwt_token , username : user.username, email : user.email,expiresIn : 3600});
     console.log("login successfull");
   } catch (error) {
     res.status(500).json({ message: "server error" });
@@ -261,7 +261,7 @@ router.post("/newpassword", async (req, res) => {
     .status(200)
     .json({ message: "Password has been reset successfully." });
 });
-module.exports = router;
+
 
 //user profile
 
@@ -447,3 +447,5 @@ router.post('/api/disconnect/:username',authenticateToken,async(req,res)=>{
     return res.status(400).json({message : "error occured during disconnecting ", error : error })
   }
 })
+
+module.exports = router;

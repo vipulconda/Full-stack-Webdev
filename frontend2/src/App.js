@@ -12,13 +12,12 @@ import UpdatePassword from "./Components/newPassword.js";
 import PageNotFound from "./Components/pagenotfound.js";
 import Profile from "./Components/Profile.js";
 import EditProfile from "./Components/EditProfile.js";
-import { AuthProvider } from './AuthContext'; 
+import { AuthProvider } from "./AuthContext";
 import Inbox from "./Components/Inbox.js";
+import { useAuth } from "./AuthContext";
 
-
+import { useEffect } from "react";
 function App() {
- 
-  
   const Cardlist = [
     { id: 1, title: "Physics", data: "Physics is best" },
     { id: 2, title: "  Chemistry", data: "Chemistry is best" },
@@ -33,23 +32,23 @@ function App() {
 
   return (
     <div className="App">
-        <AuthProvider>
-      <Router>
-        <Navbar  />
-        <Routes>
-          <Route path="/" element={<Home Cardlist={cards}/>} />
-          <Route path="/Home" element={<Home Cardlist={cards}/>} />
-          <Route path="/Contact" element={<Contact/>} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Register" element={<Register />} />
-          <Route path="/ResetPassword" element={<ResetPassword  />} />
-          <Route path="/UpdatePassword" element={<UpdatePassword />} />
-          <Route path="/profile/:username" element={<Profile/>} />
-          <Route path="/accounts/edit" element ={<EditProfile />}/>
-          <Route path="/accounts/:username/messages" element={<Inbox/>} />
-          <Route path='*' element={<PageNotFound/>}></Route> 
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home Cardlist={cards} />} />
+            <Route path="/Home" element={<Home Cardlist={cards} />} />
+            <Route path="/Contact" element={<Contact />} />
+            <Route path="/Login" element={<Login />} />
+            <Route path="/Register" element={<Register />} />
+            <Route path="/ResetPassword" element={<ResetPassword />} />
+            <Route path="/UpdatePassword" element={<UpdatePassword />} />
+            <Route path="/profile/:username" element={<Profile />} />
+            <Route path="/accounts/edit" element={<EditProfile />} />
+            <Route path="/accounts/:username/messages" element={<Inbox />} />
+            <Route path="*" element={<PageNotFound />}></Route>
+          </Routes>
+        </Router>
       </AuthProvider>
     </div>
   );

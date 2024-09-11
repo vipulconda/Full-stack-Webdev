@@ -27,6 +27,7 @@ const Login = () => {
           email: response.data.email,      
         };
         const authToken=response.data.token;
+        const expiresIn=response.data.expiresIn;
         login(userData,authToken);
 
         // Optionally, show success message using toastr
