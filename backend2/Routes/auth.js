@@ -274,9 +274,12 @@ router.get("/profile/:username", authenticateToken, async (req, res) => {
 
     let profilePicUrl;
     if (user.profilepic) {
+      console.log(path.basename(user.profilepic))
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/${path.basename(user.profilepic)}`;
+      console.log(profilePicUrl);
     } else {
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/default.jpg`;
+      console.log(profilePicUrl);
     }
     
     console.log("user exists" , user)
@@ -367,13 +370,14 @@ router.get('/profile/public/:username',async(req,res)=>{
 
     let profilePicUrl
     if (user.profilepic) {
-      console.log("inside 1")
+      console.log(path.basename(user.profilepic));
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/${path.basename(user.profilepic)}`;
+      console.log(profilePicUrl);
     } else {
-      console.log("inside 2")
       profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/default.jpg`;
+      console.log(profilePicUrl);
     }
-      console.log("outside 2")
+     
    return res.status(200).json({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -449,3 +453,4 @@ router.post('/api/disconnect/:username',authenticateToken,async(req,res)=>{
 })
 
 module.exports = router;
+
