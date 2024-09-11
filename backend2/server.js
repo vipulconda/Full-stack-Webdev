@@ -19,7 +19,12 @@ mongoose.connect(mongoURI).then(()=>{
 })
 
 App.use(bodyParser.json())
-App.use(cors());
+const corsOptions = {
+  origin: '*', // Replace with your frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'] // Specify allowed HTTP methods
+ 
+};
+App.use(cors(corsOptions));
 App.use(express.json());
 App.get('/test', (req, res) => {
     res.send('Server is working');
