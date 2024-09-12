@@ -1,7 +1,7 @@
 ### Deployed frontend on vercel 
 ### Deployed backend on render
 ### end to end connected with mongodb database
-### Website live on https://full-stack-webdev-eosin.vercel.app/
+### Website live on https://frontend2-brown.vercel.app/
 
 ### Used node version v16.20.2
 ### see packages required in pakage.json file
