@@ -30,8 +30,7 @@ App.get('/test', (req, res) => {
   });
 App.use('/',Routes);
 
-const uploadsDir=path.join(__dirname, 'models', 'uploads')
-App.use('/uploads', express.static(uploadsDir));
+
 const server = http.createServer(App);
 wss.attach(server);
 server.listen(PORT, () => {

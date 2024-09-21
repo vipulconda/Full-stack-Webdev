@@ -3,8 +3,8 @@ import axios from "axios";
 import dayjs from "dayjs";
 import "./Inbox.css";
 import { useLocation } from "react-router-dom";
-import {useAuth} from '../AuthContext'
-import {useNavigate} from 'react-router-dom'
+import { useAuth } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 // Utility functions
 const Inbox = () => {
   const [users, setUsers] = useState([]);
@@ -13,10 +13,10 @@ const Inbox = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const ws = useRef(null); // Use ref for WebSocket to maintain the same instance
-  const {isLoggedIn,login ,logout, token, user } = useAuth();
+  const { isLoggedIn, login, logout, token, user } = useAuth();
   const location = useLocation(); // Hook to access state passed during navigation
   const [isConnected, setIsConnected] = useState(false); // Connection status state
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   // Format the date
   const formatDate = (timestamp) => {
     const date = dayjs(timestamp);
@@ -58,9 +58,8 @@ const Inbox = () => {
   // WebSocket connection setup with connection state management
   useEffect(() => {
     const createSocket = () => {
-
-      if (!token){
-        navigate('/login');
+      if (!token) {
+        navigate("/login");
         return;
       }
 
@@ -70,7 +69,7 @@ const Inbox = () => {
 
       ws.current.onopen = () => {
         console.log("WebSocket connection opened.");
-         setIsConnected(true);
+        setIsConnected(true);
         if (user && user.username) {
           ws.current.send(
             JSON.stringify({
@@ -91,10 +90,16 @@ const Inbox = () => {
           } else if (receivedMessage.type === "previousMessages") {
             setMessages(groupMessagesByDate(receivedMessage.messages));
           } else if (receivedMessage.type === "newMessage") {
-            setMessages((prevMessages) =>
-              groupMessagesByDate([...prevMessages, receivedMessage])
-            );
-            console.log("Received message from server:", receivedMessage);
+            if (receivedMessage.content) {
+              setMessages((prevMessages) =>
+                groupMessagesByDate([...prevMessages, receivedMessage])
+              );
+              console.log("Received message from server:", receivedMessage);
+            } else {
+              console.warn(
+                "Received a blank message from the server. Ignoring."
+              );
+            }
           }
         } catch (error) {
           console.error("Error processing message:", error);
@@ -120,9 +125,6 @@ const Inbox = () => {
     };
   }, [token]);
 
-  
- 
-
   useEffect(() => {
     if (location.state && location.state.selectedUser) {
       // Delay user selection until WebSocket is connected
@@ -145,10 +147,10 @@ const Inbox = () => {
 
   const handleUserSelect = async (user2) => {
     if (!user || !user2) {
-      console.log("user not found")
+      console.log("user not found");
       return;
     }
-  console.log("user found")
+    console.log("user found");
     setSelectedUser(user2);
     try {
       // Safely send the request to fetch messages
@@ -260,17 +262,19 @@ const Inbox = () => {
                       {item.date}
                     </div>
                   ) : (
-                    <div
-                      key={`message-${item.timestamp}-${index}`} // Ensure unique key
-                      className={`chat-message ${
-                        item.sender === user.username ? "sent" : "received"
-                      } row`}
-                    >
-                      <div className="message-text"> {item.content}</div>
-                      <div className="timestamp">
-                        {formatTime(item.timestamp)}
+                    item.content && (
+                      <div
+                        key={`message-${item.timestamp}-${index}`} // Ensure unique key
+                        className={`chat-message ${
+                          item.sender === user.username ? "sent" : "received"
+                        } row`}
+                      >
+                        <div className="message-text"> {item.content}</div>
+                        <div className="timestamp">
+                          {formatTime(item.timestamp)}
+                        </div>
                       </div>
-                    </div>
+                    )
                   )
                 )}
               </div>

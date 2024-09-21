@@ -14,7 +14,7 @@ const authenticateToken = require("../models/authmiddleware");
 const Conversation = require('../models/chats');
 const { isValid } = require("zod");
 const fs = require("fs");
-
+const cloudinary = require('cloudinary').v2;
 secret_key = "123456";
 const router = express.Router();
 // send otp
@@ -271,17 +271,6 @@ router.get("/profile/:username", authenticateToken, async (req, res) => {
   try {
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: "Profile does not exist" });
-
-    let profilePicUrl;
-    if (user.profilepic) {
-      console.log(path.basename(user.profilepic))
-      profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/${path.basename(user.profilepic)}`;
-      console.log(profilePicUrl);
-    } else {
-      profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/default.jpg`;
-      console.log(profilePicUrl);
-    }
-    
     console.log("user exists" , user)
    return res.status(200).json({
       firstname: user.firstname,
@@ -294,7 +283,7 @@ router.get("/profile/:username", authenticateToken, async (req, res) => {
       dob: user.dob,
       gender: user.gender,
       university: user.university,
-      profilepic: profilePicUrl,
+      profilepic: user.profilepic,
       nationality: user.nationality,
     });
 
@@ -311,7 +300,6 @@ router.get("/profile/:username", authenticateToken, async (req, res) => {
 router.post("/edit", authenticateToken, upload.single("profilepic"), async (req, res) => {
   const { error } = validateProfileUpdate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
-
   const {
     firstname,
     lastname,
@@ -328,7 +316,6 @@ router.post("/edit", authenticateToken, upload.single("profilepic"), async (req,
   try {
     const user = await User.findOne({ username });
     if (!user) return res.status(500).json({ message: "User not found" });
-
     const oldProfilePic = user.profilepic;
     user.firstname = firstname || user.firstname;
     user.lastname = lastname || user.lastname;
@@ -340,14 +327,17 @@ router.post("/edit", authenticateToken, upload.single("profilepic"), async (req,
     user.gender = gender || user.gender;
     user.university = university || user.university;
     if (req.file) {
-      user.profilepic = req.file.path;
-      if (oldProfilePic && fs.existsSync(oldProfilePic)) {
-        fs.unlinkSync(oldProfilePic);
+     
+      if (user.profilepic) {
+      
+        const publicId = user.profilepic.split('/').pop().split('.')[0];
+        console.log(publicId)
+        await cloudinary.uploader.destroy(`profile_pics/${publicId}`);
       }
+      user.profilepic = req.file.path;
     }
-
     await user.save();
-    console.log(user)
+    console.log(user);
    return res.status(200).json({ message: "Profile edited successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
@@ -368,15 +358,7 @@ router.get('/profile/public/:username',async(req,res)=>{
 
     if (!user) return res.status(400).json({ message: "Profile does not exist" });
 
-    let profilePicUrl
-    if (user.profilepic) {
-      console.log(path.basename(user.profilepic));
-      profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/${path.basename(user.profilepic)}`;
-      console.log(profilePicUrl);
-    } else {
-      profilePicUrl = `${req.protocol}://${req.get("host")}/uploads/default.jpg`;
-      console.log(profilePicUrl);
-    }
+    
      
    return res.status(200).json({
       firstname: user.firstname,
@@ -385,7 +367,7 @@ router.get('/profile/public/:username',async(req,res)=>{
       email: user.email,
       about: user.about,
       university: user.university,
-      profilepic: profilePicUrl,
+      profilepic: user.profilepic,
       connections:user.connections
     });
     

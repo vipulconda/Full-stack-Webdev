@@ -61,8 +61,8 @@ const userSchema = new mongoose.Schema({
       type : String
     },
     profilepic:{
-      type: String // Store the file data as a buffer
-    
+      type: String ,
+      default: 'https://res.cloudinary.com/dgnldu9be/image/upload/v1726063126/3135715_pvfqw5.png'
     },
     connections:[String]
 });
