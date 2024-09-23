@@ -8,10 +8,14 @@ const validateUser = require("../models/validate");
 const crypto = require("crypto");
 const OTP = require("../models/otpschema");
 const path = require("path");
-const upload = require("../models/uploads");
+const {profilepicupload,postupload} = require("../models/uploads");
 const validateProfileUpdate = require("../models/profileupdatevalidation");
 const authenticateToken = require("../models/authmiddleware");
 const Conversation = require('../models/chats');
+const Posts=require('../models/post')
+const Comment=require('../models/comments')
+const Like=require('../models/likes')
+
 const { isValid } = require("zod");
 const fs = require("fs");
 const cloudinary = require('cloudinary').v2;
@@ -151,7 +155,7 @@ router.post("/login", async (req, res) => {
     jwt_token = jwt.sign({ username: user.username }, secret_key, {
       expiresIn: "1h",
     });
-    res.json({ token: jwt_token , username : user.username, email : user.email,expiresIn : 3600});
+    res.json({ token: jwt_token , username : user.username, email : user.email,userId:user._id,expiresIn : 3600});
     console.log("login successfull");
   } catch (error) {
     res.status(500).json({ message: "server error" });
@@ -265,13 +269,12 @@ router.post("/newpassword", async (req, res) => {
 
 //user profile
 
-
 router.get("/profile/:username", authenticateToken, async (req, res) => {
   const username = req.params.username;
   try {
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: "Profile does not exist" });
-    console.log("user exists" , user)
+   
    return res.status(200).json({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -297,7 +300,7 @@ router.get("/profile/:username", authenticateToken, async (req, res) => {
 
 
 //edit user profile
-router.post("/edit", authenticateToken, upload.single("profilepic"), async (req, res) => {
+router.post("/edit", authenticateToken, profilepicupload.single("profilepic"), async (req, res) => {
   const { error } = validateProfileUpdate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
   const {
@@ -351,15 +354,9 @@ router.get("/test", (req, res) => {
 // public user profile
 router.get('/profile/public/:username',async(req,res)=>{
   const username = req.params.username;
-  console.log(username)
   try {
     const user = await User.findOne({ username });
-    console.log(user)
-
-    if (!user) return res.status(400).json({ message: "Profile does not exist" });
-
-    
-     
+    if (!user) return res.status(400).json({ message: "Profile does not exist" });    
    return res.status(200).json({
       firstname: user.firstname,
       lastname: user.lastname,
@@ -433,6 +430,125 @@ router.post('/api/disconnect/:username',authenticateToken,async(req,res)=>{
     return res.status(400).json({message : "error occured during disconnecting ", error : error })
   }
 })
+
+// add posts
+router.post('/:userId/create-post',authenticateToken,postupload.single("image"),async(req,res)=>{
+   try{
+    const userid=req.params.userId
+    console.log("userId: ", userid)
+     const content=req.body.content;
+     const Post=new Posts({
+      user_id:userid,
+      image:req.file.path,
+      content:content
+     })
+    await Post.save();
+    return res.status(200).json({message:"new post added successfully",Post : Post});
+   }
+   catch(error){
+    console.log(error)
+    return res.status(400).json({message:"error occured during creating post ",error});
+   }
+})
+// add comment
+router.post('/add-comment/:post_id',authenticateToken,async (req,res)=>{
+    try{
+      const userId=req.params.userId;
+    const postId=req.params.post_id;
+    const content=req.body;
+    const new_comment=new Comment({
+      user_id:userId,
+      post_id:postId,
+      content:content
+    })
+    await new_comment.save();
+    return res.status(200).json({message:"comment added",comment:new_comment});
+    }
+    catch(error){
+        return res.status(400).json("message : error happend during adding comment ",error);
+    }
+})
+
+// add likes
+router.post('/posts/:userId/:post_id/like',authenticateToken,async (req,res)=>{
+ try{
+  const userId=req.params.userId;
+ const postId=req.params.post_id;
+ const AlreadyLiked=await Like.findOne({user_id:userId, post_id:postId});
+ if(AlreadyLiked){
+  return res.status(400).json({message:"already liked"});
+ }
+ 
+ const newLike=new Like({user_id:userId, post_id:postId });
+ await newLike.save();
+ const post= await Posts.findOne({_id :postId})
+ post.likes++;
+ await post.save();
+ return res.status(200).json({message:"like added successfully"});
+ }
+ catch(error){
+  console.log(error)
+  return res.status(500).json({message : "error occured ", error})
+ }
+})
+// remove like
+router.post('/posts/:userId/:post_id/unlike',authenticateToken,async (req,res)=>{
+  try{
+   const userId=req.params.userId;
+  const postId=req.params.post_id;
+  const DeletedLike=await Like.findOneAndDelete({user_id:userId, post_id:postId});
+  
+  if(DeletedLike){
+    const post= await Posts.findOne({_id :postId})
+    post.likes--;
+    await post.save();
+    return res.status(200).json({message:"like  removed successfully"});
+  }
+  return res.status(200).json({message:"not liked"});
+  }
+  catch(error){
+    console.log(error)
+   return res.status(500).json({message : "error occured ", error})
+  }
+ })
+
+ // Get whether the user has liked the post
+router.get('/posts/:userId/:postId/isLiked',authenticateToken, async (req, res) => {
+  try {
+    const { userId, postId } = req.params;
+    // Check if the user has liked the post
+    const like=await Like.findOne({user_id:userId, post_id:postId});
+    let isLiked=false;
+    if(like)isLiked=true;
+   return res.status(200).json({ isLiked});
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: 'Error fetching like status', error });
+  }
+});
+
+//get posts
+router.get('/profile/:username/posts',authenticateToken ,async (req, res) => {
+  
+  try {
+    const  {username}  = req.params;
+  console.log("username " ,username)
+  const user=await User.findOne({username:username});
+  const userId=user._id;
+  const { page = 1, limit = 10 } = req.query; // Default to 10 posts per page
+    const posts = await Posts.find({ user_id: userId })
+      .skip((page - 1) * limit) // Skip the posts already fetched
+      .limit(Number(limit)) // Limit the number of posts returned
+      .sort({ createdAt: -1 }); // Sort by latest posts
+    const totalPosts = await Posts.countDocuments({ user_id: userId });
+    const hasMore = totalPosts > page * limit; // Check if more posts are available
+    console.log("posts",posts)
+   return res.status(200).json({ posts, hasMore });
+  } catch (error) {
+    console.log(error)
+   return res.status(500).json({ message: 'Error fetching posts', error });
+  }
+});
 
 module.exports = router;
 

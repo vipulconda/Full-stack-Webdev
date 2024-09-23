@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
+import CreatePost from "./AddPost";
+import PostCard from "./post-card";
+import Cardlist from "./Cardlist";
 
 const Profile = () => {
   const [UserProfile, setUserProfile] = useState(null);
@@ -9,34 +12,40 @@ const Profile = () => {
   const [success, setSuccess] = useState(false);
   const { username } = useParams();
   const navigate = useNavigate();
-  const [isEdited, setIsEdited] = useState(false);
-  const { isLoggedIn, login, logout, token, user } = useAuth();
-  const [isOwnProfile, setIsOwnProfile] = useState('');
+  const { isLoggedIn, logout, token, user } = useAuth();
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true); 
+ 
   useEffect(() => {
+    console.log("username", user)
+    console.log("token",token)
     if (username && user) {
       setIsOwnProfile(username === user?.username);
-    }else{
+    } else {
       setIsOwnProfile(false);
     }
   }, [username, user]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      console.log("trying to fetch")
       try {
         const endpoint = isOwnProfile
           ? `${process.env.REACT_APP_API_URL}/profile/${username}`
           : `${process.env.REACT_APP_API_URL}/profile/public/${username}`;
-
+          console.log("endpoint",endpoint)
         const response = await axios.get(endpoint, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
+        console.log("response",response.data)
         setUserProfile(response.data);
         setSuccess(true);
-        console.log("success status",success)
-        console.log("profile data ",response.data)
       } catch (error) {
+        console.log("error",error)
         if (error.response && error.response.status === 401) {
           setError("Unauthorized access. Please log in.");
           logout();
@@ -47,36 +56,100 @@ const Profile = () => {
           navigate("/login");
         }
         setSuccess(false);
-        
       }
     };
 
     fetchUserProfile();
-  }, [
-    username,
-    isLoggedIn,
-    isEdited,
-    navigate,
-    logout,
-    token,
-    isOwnProfile,
-    success
-  ]);
+  }, [username, isLoggedIn, logout, token, isOwnProfile,success]);
+
+  // Fetch posts with pagination
+  const fetchPosts = async () => {
+    if (!hasMore || loading) return;
+
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/profile/${username}/posts`,
+        {
+          params: { page },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const newPosts=response.data.posts
+      console.log("new posts",newPosts)
+      setPosts((prevPosts) => {
+        // Filter out duplicate posts
+        const uniquePosts = newPosts.filter(post => !prevPosts.some(p => p.id === post.id));
+        return [...prevPosts, ...uniquePosts]; // Append new unique posts
+      });
+      setHasMore(response.data.hasMore);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const renderPosts = () => {
+    console.log("trying to render")
+    return (
+      <div className="container">
+        <div className="row">
+          {posts.map((post) => (
+            <div className="col-md-4 mb-3" key={post._id}>
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
+  useEffect(() => {
+    console.log("page " ,page)
+    if (!user || !user.userId) return;
+
+    const fetchPostsOnce = async () => {
+      if (!loading && hasMore) {
+        await fetchPosts();
+      }
+    };
+    fetchPostsOnce();
+  }, [page, user]);
+
+  // Infinite scroll handler
+  const handleScroll = () => {
+    if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 100) {
+      return; // Avoid fetching more posts
+    }
+    setPage((prevPage) => prevPage + 1); // Increment page number
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   useEffect(() => {
     const checkConnection = () => {
-      if (UserProfile && user && UserProfile.connections.includes(user.username)) {
+      if (
+        UserProfile &&
+        user &&
+        UserProfile.connections.includes(user.username)
+      ) {
         setIsConnected(true);
       }
     };
-  
+
     if (!isOwnProfile && UserProfile) {
       checkConnection();
     }
-  }, [user, UserProfile, setIsConnected, isOwnProfile]);
+  }, [user, UserProfile, isOwnProfile]);
+
   const handleConnect = async () => {
     try {
-      console.log("connection status ", isConnected);
-
       if (isConnected) {
         await axios.post(
           `${process.env.REACT_APP_API_URL}/api/disconnect/${username}`,
@@ -87,7 +160,6 @@ const Profile = () => {
         );
         setIsConnected(false);
       } else {
-        console.log("token ", token);
         await axios.post(
           `${process.env.REACT_APP_API_URL}/api/connect/${username}`,
           {},
@@ -101,22 +173,26 @@ const Profile = () => {
       console.error("Error updating Connect status:", error);
     }
   };
+
   const handleLogout = (e) => {
     e.preventDefault();
     logout();
     navigate("/login");
   };
+
   const goToInbox = () => {
     navigate(`/accounts/${user.username}/messages`);
   };
 
   const editProfile = () => {
-    setIsEdited(!isEdited);
     navigate("/accounts/edit");
   };
-  const handleMessage=()=>{
-    navigate(`/accounts/${user.username}/messages`, { state: { selectedUser: UserProfile } });
-  }
+
+  const handleMessage = () => {
+    navigate(`/accounts/${user.username}/messages`, {
+      state: { selectedUser: UserProfile },
+    });
+  };
 
   return success ? (
     <>
@@ -178,7 +254,7 @@ const Profile = () => {
                           {isConnected ? "Disconnect" : "Connect"}
                         </button>
                         <button
-                           onClick={handleMessage}
+                          onClick={handleMessage}
                           className="btn btn-sm btn-secondary text-light mx-2"
                         >
                           Message
@@ -241,52 +317,15 @@ const Profile = () => {
                           About
                         </div>
                         <div className="card-body">
-                          <p className="font-italic">{UserProfile.about}</p>
+                          <p>{UserProfile.about || "No information available."}</p>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <div className="d-flex justify-content-between align-items-center mb-4">
-                    <p className="lead fw-normal mb-0">Recent Photos</p>
-                    <p className="mb-0">
-                      <a href="#!" className="text-muted">
-                        Show all
-                      </a>
-                    </p>
-                  </div>
-                  <div className="row g-2">
-                    <div className="col mb-2">
-                      <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(112).webp"
-                        alt="image 1"
-                        className="w-100 rounded-3"
-                      />
-                    </div>
-                    <div className="col mb-2">
-                      <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(107).webp"
-                        alt="image 1"
-                        className="w-100 rounded-3"
-                      />
-                    </div>
-                  </div>
-                  <div className="row g-2">
-                    <div className="col">
-                      <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(108).webp"
-                        alt="image 1"
-                        className="w-100 rounded-3"
-                      />
-                    </div>
-                    <div className="col">
-                      <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(114).webp"
-                        alt="image 1"
-                        className="w-100 rounded-3"
-                      />
-                    </div>
-                  </div>
+                
+                  {isOwnProfile && <CreatePost />}
+                  <h5 className="text-center mb-4 mt-2">Posts</h5>
+                  { (isConnected || isOwnProfile) && renderPosts() }
                 </div>
               </div>
             </div>

@@ -24,7 +24,8 @@ const Login = () => {
         // Store user information in local storage
         const userData = {
           username: response.data.username, 
-          email: response.data.email,      
+          email: response.data.email, 
+          userId: response.data.userId     
         };
         const authToken=response.data.token;
         const expiresIn=response.data.expiresIn;

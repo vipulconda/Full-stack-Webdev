@@ -5,7 +5,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('./cloudinaryConfig'); // Import the Cloudinary config
 
 // Configure Multer Storage for Cloudinary
-const storage = new CloudinaryStorage({
+const profilepicStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'profile_pics', // Folder where images will be stored in Cloudinary
@@ -13,10 +13,21 @@ const storage = new CloudinaryStorage({
     transformation: [{ width: 500, height: 500, crop: 'limit' }] 
   },
 });
-
-// Create Multer instance with disk storage and file filter
-const upload = multer({
-  storage: storage
+const postStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'posts', // Folder where post images will be stored
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif'], // Allowed image formats
+    transformation: [{ width: 1200, height: 1200, crop: 'limit' }] // Adjust image size for posts
+  },
 });
 
-module.exports = upload;
+// Create Multer instance with disk storage and file filter
+const profilepicupload = multer({
+  storage: profilepicStorage
+});
+
+const postupload= multer({
+  storage:postStorage
+});
+module.exports = {profilepicupload,postupload}

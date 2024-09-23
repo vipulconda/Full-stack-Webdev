@@ -26,6 +26,7 @@ const Navbar = () => {
       const username = user.username;
       console.log("Username from localStorage:", username);
       const url = `/profile/${username}`;
+      console.log(url);
       navigate(url);
     } else {
       logout();
