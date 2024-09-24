@@ -1,12 +1,14 @@
 import React, { useState ,useEffect} from "react";
 import axios from 'axios'
 import { useAuth } from "../AuthContext";
-const PostCard = ({ post }) => {
+import { useNavigate } from "react-router-dom";
+const PostCard = ({ post, username }) => {
   const [likes, setLikes] = useState(post.likes || 0);
   const [comments, setComments] = useState(post.comments_count || 0);
   const [isLiked, setIsLiked] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const {user,token}=useAuth();
+  const navigate=useNavigate();
   // Fetch like status from the server on component mount
   useEffect(() => {
     console.log("token",token)
@@ -100,7 +102,7 @@ const PostCard = ({ post }) => {
           <div className="modal-content">
             <div className="modal-header">
             <i className="bi bi-arrow-left-circle-fill h2" onClick={handleCloseModal}></i>
-            <h5 className="modal-title">Post Details</h5>
+            <h5 className="modal-title"><a onClick={()=>navigate(`/profile/${username}`)}>{username}</a></h5>
             </div>
             <div className="modal-body text-center">
               <img

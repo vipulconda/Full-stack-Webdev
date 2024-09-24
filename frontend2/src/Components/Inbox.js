@@ -250,7 +250,7 @@ const Inbox = () => {
           {selectedUser ? (
             <div className="card chat-window">
               <div className="card-header">
-                Chat with {selectedUser.firstname} {selectedUser.lastname}
+                Chat with <a className ='fs-5' onClick={()=>navigate(`/profile/${selectedUser.username}`)}>{selectedUser.firstname} {selectedUser.lastname}</a>
               </div>
               <div className="card-body chat-messages">
                 {messages.map((item, index) =>
